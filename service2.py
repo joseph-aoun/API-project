@@ -72,13 +72,13 @@ def update_good(good):
         conn.close()
     return updated_good
 
-def deduct_good(good_id):
+def deduct_good(name):
     message = {}
     try:
         with connect_to_db() as conn:
             conn.execute('''
-                UPDATE inventory SET quantity = quantity - 1 WHERE item_id = ?;
-            ''', (good_id,))
+                UPDATE inventory SET quantity = quantity - 1 WHERE name = ?;
+            ''', (name,))
             conn.commit()
             print("Good deducted successfully")
             message['status'] = "Good deducted successfully"
@@ -108,7 +108,7 @@ def get_goods():
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "*"}})
 
-@app.route('/api_add_good', methods=['POST'])
+@app.route('/api/add_good', methods=['POST'])
 def api_add_good():
     good = request.get_json()
     try:
@@ -119,21 +119,29 @@ def api_add_good():
     except:
         return jsonify({'status': 'Good addition failed'})
 
-@app.route('/api_get_goods', methods=['GET'])
+@app.route('/api/get_goods', methods=['GET'])
 def api_get_goods():
     return jsonify(get_goods())
 
-@app.route('/api_update_good', methods=['POST'])
+@app.route('/api/update_good', methods=['POST'])
 def api_update_good():
     good = request.get_json()
     return jsonify(update_good(good))
 
-@app.route('/api_deduct_good', methods=['POST'])
+@app.route('/api/deduct_good', methods=['POST'])
 def api_deduct_good():
-    good_id = request.get_json()
-    return jsonify(deduct_good(good_id))
+    name = request.get_json()
+    return jsonify(deduct_good(name))
 
 create_db_table()
 
 if __name__ == '__main__':
     app.run(debug=True, port=5000, host = '0.0.0.0')
+    
+'''
+pm.environment.set("name", "chips");
+pm.environment.set("category", "food");
+pm.environment.set("price", 10);
+pm.environment.set("quantity", 10);
+pm.environment.set("description", "crispy");
+'''
