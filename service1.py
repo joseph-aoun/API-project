@@ -251,5 +251,3 @@ def api_deduct_from_customer_wallet():
 
 if __name__ == "__main__":
     app.run(debug=True, port=5000, host='0.0.0.0')
-
-#now I'm modyfying another branch
