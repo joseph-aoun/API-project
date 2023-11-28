@@ -57,7 +57,7 @@ def get_good_by_name(name):
         conn.close()
 
 def update_good(good):
-    message = {}
+    updated_good = {}
     try:
         with connect_to_db() as conn:
             conn.execute('''
@@ -65,13 +65,12 @@ def update_good(good):
             ''', (good['name'], good['category'], good['price'], good['quantity'], good['description'], good['item_id']))
             conn.commit()
             print("Good updated successfully")
-            message['status'] = "Good updated successfully"
+            updated_good = get_good_by_name(good['name'])
     except:
         print("Good update failed")
-        message['status'] = "Good update failed"
     finally:
         conn.close()
-    return message
+    return updated_good
 
 def deduct_good(good_id):
     message = {}
