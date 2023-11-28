@@ -1,8 +1,9 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, Blueprint
 from flask_cors import CORS
 import sqlite3
 from service3 import app
 
+service1 = Blueprint('service1', __name__)
 
 # the following code is from service1.py 
 # the code was created by: Joseph Aoun and Samer Saade
@@ -214,37 +215,36 @@ create_db_table()
 
 # The following code is the API endpoints for the customer service
 
-@app.route('/api/customers', methods=['GET'])
+@service1.route('/api/customers', methods=['GET'])
 def api_get_customers():
     return jsonify(get_customers())
 
-@app.route('/api/customers/<customer_id>', methods=['GET'])
+@service1.route('/api/customers/<customer_id>', methods=['GET'])
 def api_get_customer(customer_id):
     return jsonify(get_customer_by_id(customer_id))
 
-@app.route('/api/customers/add', methods=['POST'])
+@service1.route('/api/customers/add', methods=['POST'])
 def api_add_customer():
     customer = request.get_json()
     return jsonify(insert_customer(customer))
 
-@app.route('/api/customers/update', methods=['PUT'])
+@service1.route('/api/customers/update', methods=['PUT'])
 def api_update_customer():
     customer = request.get_json()
     return jsonify(update_customer(customer))
 
-@app.route('/api/customers/delete/<username>', methods=['DELETE'])
+@service1.route('/api/customers/delete/<username>', methods=['DELETE'])
 def api_delete_customer(username):
     return jsonify(delete_customer(username))
 
-@app.route('/api/customers/charge_wallet', methods=['PUT'])
+@service1.route('/api/customers/charge_wallet', methods=['PUT'])
 def api_charge_customer_wallet():
     customer = request.get_json()
     charge_customer_wallet(customer["username"], customer["amount"])
     return jsonify(get_customer_by_username(customer["username"]))
 
-@app.route('/api/customers/deduct_wallet', methods=['PUT'])
+@service1.route('/api/customers/deduct_wallet', methods=['PUT'])
 def api_deduct_from_customer_wallet():
     customer = request.get_json()
     deduct_from_customer_wallet(customer["username"], customer["amount"])
     return jsonify(get_customer_by_username(customer["username"]))
-

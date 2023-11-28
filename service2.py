@@ -1,8 +1,9 @@
 import sqlite3
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, Blueprint
 from flask_cors import CORS
 from service3 import app
 
+service2 = Blueprint('service2', __name__)
 
 def connect_to_db():
     conn = sqlite3.connect('inventory_database.db')
@@ -165,7 +166,7 @@ def get_goods():
         conn.close()
     return goods
 
-@app.route('/api/add_good', methods=['POST'])
+@service2.route('/api/add_good', methods=['POST'])
 def api_add_good():
     good = request.get_json()
     try:
@@ -176,21 +177,21 @@ def api_add_good():
     except:
         return jsonify({'status': 'Good addition failed'})
 
-@app.route('/api/get_goods', methods=['GET'])
+@service2.route('/api/get_goods', methods=['GET'])
 def api_get_goods():
     return jsonify(get_goods())
 
-@app.route('/api/update_good', methods=['POST'])
+@service2.route('/api/update_good', methods=['POST'])
 def api_update_good():
     good = request.get_json()
     return jsonify(update_good(good))
 
-@app.route('/api/deduct_good', methods=['PUT'])
+@service2.route('/api/deduct_good', methods=['PUT'])
 def api_deduct_good():
     name = request.get_json()
     return jsonify(deduct_good(name))
 
-@app.route('/api/get_good_by_name/<name>', methods=['GET'])
+@service2.route('/api/get_good_by_name/<name>', methods=['GET'])
 def api_get_good_by_name(name):
     return jsonify(get_good_by_name(name))
 
