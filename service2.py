@@ -1,9 +1,8 @@
 import sqlite3
 from flask import Flask, request, jsonify, Blueprint
 from flask_cors import CORS
-from service3 import app
 
-service2 = Blueprint('service2', __name__)
+serv2 = Blueprint('service2', __name__)
 
 def connect_to_db():
     conn = sqlite3.connect('inventory_database.db')
@@ -166,7 +165,33 @@ def get_goods():
         conn.close()
     return goods
 
-@service2.route('/api/add_good', methods=['POST'])
+def delete_good(name):
+    """ this function deletes a good from the inventory table in the database
+
+        Args:
+            name (str): the name of the good to be deleted
+            
+        Returns:
+            message: a message indicating the status of the deletion
+    """
+    
+    message = {}
+    try:
+        with connect_to_db() as conn:
+            conn.execute('''
+                DELETE FROM inventory WHERE name = ?;
+            ''', (name,))
+            conn.commit()
+            print("Good deleted successfully")
+            message['status'] = "Good deleted successfully"
+    except:
+        print("Good deletion failed")
+        message['status'] = "Good deletion failed"
+    finally:
+        conn.close()
+    return message
+
+@serv2.route('/api/add_good', methods=['POST'])
 def api_add_good():
     good = request.get_json()
     try:
@@ -177,22 +202,26 @@ def api_add_good():
     except:
         return jsonify({'status': 'Good addition failed'})
 
-@service2.route('/api/get_goods', methods=['GET'])
+@serv2.route('/api/get_goods', methods=['GET'])
 def api_get_goods():
     return jsonify(get_goods())
 
-@service2.route('/api/update_good', methods=['POST'])
+@serv2.route('/api/update_good', methods=['POST'])
 def api_update_good():
     good = request.get_json()
     return jsonify(update_good(good))
 
-@service2.route('/api/deduct_good', methods=['PUT'])
+@serv2.route('/api/deduct_good', methods=['PUT'])
 def api_deduct_good():
     name = request.get_json()
     return jsonify(deduct_good(name))
 
-@service2.route('/api/get_good_by_name/<name>', methods=['GET'])
+@serv2.route('/api/get_good_by_name/<name>', methods=['GET'])
 def api_get_good_by_name(name):
     return jsonify(get_good_by_name(name))
+
+@serv2.route('/api/delete_good/<name>', methods=['DELETE'])
+def api_delete_good(name):
+    return jsonify(delete_good(name))
 
 create_db_table()

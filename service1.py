@@ -1,9 +1,8 @@
 from flask import Flask, request, jsonify, Blueprint
 from flask_cors import CORS
 import sqlite3
-from service3 import app
 
-service1 = Blueprint('service1', __name__)
+serv = Blueprint('service1', __name__)
 
 # the following code is from service1.py 
 # the code was created by: Joseph Aoun and Samer Saade
@@ -215,35 +214,38 @@ create_db_table()
 
 # The following code is the API endpoints for the customer service
 
-@service1.route('/api/customers', methods=['GET'])
+@serv.route('/api/customers', methods=['GET'])
 def api_get_customers():
     return jsonify(get_customers())
 
-@service1.route('/api/customers/<customer_id>', methods=['GET'])
+@serv.route('/api/customers/<customer_id>', methods=['GET'])
 def api_get_customer(customer_id):
     return jsonify(get_customer_by_id(customer_id))
 
-@service1.route('/api/customers/add', methods=['POST'])
+@serv.route('/api/customers/add', methods=['POST'])
 def api_add_customer():
     customer = request.get_json()
-    return jsonify(insert_customer(customer))
+    try:
+        return jsonify(insert_customer(customer))
+    except:
+        return jsonify({'status': 'Username already taken'})
 
-@service1.route('/api/customers/update', methods=['PUT'])
+@serv.route('/api/customers/update', methods=['PUT'])
 def api_update_customer():
     customer = request.get_json()
     return jsonify(update_customer(customer))
 
-@service1.route('/api/customers/delete/<username>', methods=['DELETE'])
+@serv.route('/api/customers/delete/<username>', methods=['DELETE'])
 def api_delete_customer(username):
     return jsonify(delete_customer(username))
 
-@service1.route('/api/customers/charge_wallet', methods=['PUT'])
+@serv.route('/api/customers/charge_wallet', methods=['PUT'])
 def api_charge_customer_wallet():
     customer = request.get_json()
     charge_customer_wallet(customer["username"], customer["amount"])
     return jsonify(get_customer_by_username(customer["username"]))
 
-@service1.route('/api/customers/deduct_wallet', methods=['PUT'])
+@serv.route('/api/customers/deduct_wallet', methods=['PUT'])
 def api_deduct_from_customer_wallet():
     customer = request.get_json()
     deduct_from_customer_wallet(customer["username"], customer["amount"])
