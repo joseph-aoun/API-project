@@ -62,29 +62,6 @@ def add_good(good):
     finally:
         conn.close()
 
-def get_good_by_name(name):
-    
-    """ this function retrieves a good from the inventory table in the database
-
-        Args:
-            name (str): the name of the good to be retrieved
-        
-        Returns:
-            good: the good retrieved from the inventory table
-    """
-    
-    try:
-        with connect_to_db() as conn:
-            cursor = conn.execute('''
-                SELECT * FROM inventory WHERE name = ?;
-            ''', (name,))
-            good = cursor.fetchone()
-            return good
-    except:
-        print("Good retrieval failed")
-    finally:
-        conn.close()
-
 def update_good(good):
     """ 
         this function updates a good in the inventory table in the database
@@ -142,29 +119,6 @@ def deduct_good(name):
         conn.close()
     return message
 
-def get_goods():
-    
-    """ this function retrieves all goods from the inventory table in the database
-
-        Returns:
-            goods: the goods retrieved from the inventory table
-    """
-    
-    goods = []
-    try:
-        conn = connect_to_db()
-        conn.row_factory = sqlite3.Row
-        cur = conn.cursor()
-        cur.execute("SELECT * FROM inventory")
-        rows = cur.fetchall()
-        for row in rows:
-            goods.append(dict(row))
-    except:
-        goods = []
-    finally:
-        conn.close()
-    return goods
-
 def delete_good(name):
     """ this function deletes a good from the inventory table in the database
 
@@ -202,10 +156,6 @@ def api_add_good():
     except:
         return jsonify({'status': 'Good addition failed'})
 
-@serv2.route('/api/get_goods', methods=['GET'])
-def api_get_goods():
-    return jsonify(get_goods())
-
 @serv2.route('/api/update_good', methods=['POST'])
 def api_update_good():
     good = request.get_json()
@@ -215,10 +165,6 @@ def api_update_good():
 def api_deduct_good():
     name = request.get_json()
     return jsonify(deduct_good(name))
-
-@serv2.route('/api/get_good_by_name/<name>', methods=['GET'])
-def api_get_good_by_name(name):
-    return jsonify(get_good_by_name(name))
 
 @serv2.route('/api/delete_good/<name>', methods=['DELETE'])
 def api_delete_good(name):

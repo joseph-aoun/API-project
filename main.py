@@ -9,9 +9,11 @@ def create_app():
     
     from service1 import serv
     from service2 import serv2
+    from service3 import serv3
     
     app.register_blueprint(serv)
     app.register_blueprint(serv2)
+    app.register_blueprint(serv3)
     
     return app
 
