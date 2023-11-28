@@ -9,7 +9,6 @@ def connect_to_db():
 def create_db_table():
     try:
         with connect_to_db() as conn:
-            # it has a name, category(food, clothes, accessories, electronics), price, quantity, description
             conn.execute('''
                 CREATE TABLE inventory (
                     item_id INTEGER PRIMARY KEY NOT NULL,
@@ -78,9 +77,14 @@ def deduct_good(name):
         with connect_to_db() as conn:
             conn.execute('''
                 UPDATE inventory SET quantity = quantity - 1 WHERE name = ?;
-            ''', (name,))
+            ''', (name['name'],))
             conn.commit()
+            cursor = conn.execute('''
+                SELECT quantity FROM inventory WHERE name = ?;
+            ''', (name['name'],))
+            quantity = cursor.fetchone()
             print("Good deducted successfully")
+            message['quantity'] = quantity[0]
             message['status'] = "Good deducted successfully"
     except:
         print("Good deduction failed")
@@ -128,7 +132,7 @@ def api_update_good():
     good = request.get_json()
     return jsonify(update_good(good))
 
-@app.route('/api/deduct_good', methods=['POST'])
+@app.route('/api/deduct_good', methods=['PUT'])
 def api_deduct_good():
     name = request.get_json()
     return jsonify(deduct_good(name))
