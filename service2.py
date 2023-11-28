@@ -90,4 +90,18 @@ def deduct_good(good_id):
         conn.close()
     return message
 
-def 
+def get_goods():
+    goods = []
+    try:
+        conn = connect_to_db()
+        conn.row_factory = sqlite3.Row
+        cur = conn.cursor()
+        cur.execute("SELECT * FROM inventory")
+        rows = cur.fetchall()
+        for row in rows:
+            goods.append(dict(row))
+    except:
+        goods = []
+    finally:
+        conn.close()
+    return goods
