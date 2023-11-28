@@ -1,6 +1,8 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import sqlite3
+from service3 import app
+
 
 # the following code is from service1.py 
 # the code was created by: Joseph Aoun and Samer Saade
@@ -209,9 +211,6 @@ def deduct_from_customer_wallet(username, amount):
 
 create_db_table()
 
-app = Flask(__name__)
-CORS(app, resources={r"/*": {"origins": "*"}})
-
 
 # The following code is the API endpoints for the customer service
 
@@ -249,5 +248,3 @@ def api_deduct_from_customer_wallet():
     deduct_from_customer_wallet(customer["username"], customer["amount"])
     return jsonify(get_customer_by_username(customer["username"]))
 
-if __name__ == "__main__":
-    app.run(debug=True, port=5000, host='0.0.0.0')

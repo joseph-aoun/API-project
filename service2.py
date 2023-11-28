@@ -1,6 +1,8 @@
 import sqlite3
 from flask import Flask, request, jsonify
 from flask_cors import CORS
+from service3 import app
+
 
 def connect_to_db():
     conn = sqlite3.connect('inventory_database.db')
@@ -163,9 +165,6 @@ def get_goods():
         conn.close()
     return goods
 
-app = Flask(__name__)
-CORS(app, resources={r"/*": {"origins": "*"}})
-
 @app.route('/api/add_good', methods=['POST'])
 def api_add_good():
     good = request.get_json()
@@ -196,6 +195,3 @@ def api_get_good_by_name(name):
     return jsonify(get_good_by_name(name))
 
 create_db_table()
-
-if __name__ == '__main__':
-    app.run(debug=True, port=5000, host = '0.0.0.0')
