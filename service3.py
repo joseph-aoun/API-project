@@ -171,6 +171,19 @@ def get_purshase_history(username):
         conn.close()
     return history
 
+def delete_purchase_history():
+    try:
+        with connect_to_db_3() as conn:
+            conn.execute('''
+                DELETE FROM purchase_history;
+            ''')
+            conn.commit()
+            print("purchase_history table deleted successfully")
+    except:
+        print("purchase_history table deletion failed")
+    finally:
+        conn.close()
+
 @serv3.route('/api/get_goods', methods=['GET'])
 def api_get_goods():
     return jsonify(get_goods())
