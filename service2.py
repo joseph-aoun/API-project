@@ -137,6 +137,11 @@ def api_deduct_good():
     name = request.get_json()
     return jsonify(deduct_good(name))
 
+@app.route('/api/get_good_by_name/<name>', methods=['GET'])
+def api_get_good_by_name(name):
+    return jsonify(get_good_by_name(name))
+
+
 create_db_table()
 
 if __name__ == '__main__':
