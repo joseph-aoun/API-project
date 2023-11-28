@@ -91,9 +91,37 @@ def get_goods():
         conn.close()
     return goods
 
+def deduct_good_amount(good, quantity=1):
+    """ this function deducts a good from the inventory table in the database
+
+        Args:
+            good (dict): the good to be deducted
+            quantity (int): the quantity of the good to be deducted
+            
+        Returns:
+            message: a message indicating the status of the deduction
+    """
+    
+    message = {}
+    try:
+        with service2.connect_to_db() as conn:
+            conn.execute('''
+                UPDATE inventory SET quantity = quantity - ? WHERE name = ?;
+            ''', (quantity, good['name']))
+            conn.commit()
+            print("Good deducted successfully")
+            message['status'] = "Good deducted successfully"
+    except:
+        print("Good deduction failed")
+        message['status'] = "Good deduction failed"
+    finally:
+        conn.close()
+    return message
+
 def make_purshase(good_name, username, quantity):
     good = get_good_by_name(good_name)
     message = {}
+    quantity = int(quantity)
     if good['quantity'] < quantity:
         message['status'] = "Purchase failed - Not enough goods in stock"
         return message
@@ -107,8 +135,7 @@ def make_purshase(good_name, username, quantity):
         else:
             try:
                 service1.deduct_from_customer_wallet(username, price*quantity)
-                for _ in range(quantity):
-                    service2.deduct_good(good_name)
+                deduct_good_amount({'name': good_name}, quantity)
                 with connect_to_db_3() as conn:
                     conn.execute('''
                         INSERT INTO purchase_history (username, name, quantity, price)
@@ -155,8 +182,11 @@ def api_get_good_by_name(name):
 @serv3.route('/api/make_purshase', methods=['POST'])
 def api_make_purshase():
     purshase = request.get_json()
+    print(purshase)
     return jsonify(make_purshase(purshase['good_name'], purshase['username'], purshase['quantity']))
 
 @serv3.route('/api/get_purshase_history/<username>', methods=['GET'])
 def api_get_purshase_history(username):
     return jsonify(get_purshase_history(username))
+
+create_db_table_3()
