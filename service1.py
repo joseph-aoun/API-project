@@ -211,7 +211,6 @@ def deduct_from_customer_wallet(username, amount):
 
 create_db_table()
 
-
 # The following code is the API endpoints for the customer service
 
 @serv.route('/api/customers', methods=['GET'])
