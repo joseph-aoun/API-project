@@ -7,6 +7,14 @@ def connect_to_db():
     return conn
 
 def create_db_table():
+    
+    """ 
+        this function creates the inventory table in the database
+
+        returns:
+            conn: connection to the database
+    """
+    
     try:
         with connect_to_db() as conn:
             conn.execute('''
@@ -27,6 +35,16 @@ def create_db_table():
         conn.close()
         
 def add_good(good):
+    """
+        this function adds a good to the inventory table in the database
+        
+        args:
+            good: the good to be added to the inventory table
+        
+        raises:
+            sqlite3.IntegrityError: if the good already exists
+    """
+    
     if get_good_by_name(good['name']):
         raise sqlite3.IntegrityError
     try:
@@ -43,6 +61,16 @@ def add_good(good):
         conn.close()
 
 def get_good_by_name(name):
+    
+    """ this function retrieves a good from the inventory table in the database
+
+        Args:
+            name (str): the name of the good to be retrieved
+        
+        Returns:
+            good: the good retrieved from the inventory table
+    """
+    
     try:
         with connect_to_db() as conn:
             cursor = conn.execute('''
@@ -56,6 +84,16 @@ def get_good_by_name(name):
         conn.close()
 
 def update_good(good):
+    """ 
+        this function updates a good in the inventory table in the database
+        
+        args:
+            good: the good to be updated in the inventory table
+        
+        returns:
+            updated_good: the good that has been updated
+    """
+    
     updated_good = {}
     try:
         with connect_to_db() as conn:
@@ -72,6 +110,15 @@ def update_good(good):
     return updated_good
 
 def deduct_good(name):
+    """ this function deducts a good from the inventory table in the database
+
+        Args:
+            name (str): the name of the good to be deducted
+            
+        Returns:
+            message: a message indicating the status of the deduction
+    """
+    
     message = {}
     try:
         with connect_to_db() as conn:
@@ -94,6 +141,13 @@ def deduct_good(name):
     return message
 
 def get_goods():
+    
+    """ this function retrieves all goods from the inventory table in the database
+
+        Returns:
+            goods: the goods retrieved from the inventory table
+    """
+    
     goods = []
     try:
         conn = connect_to_db()
@@ -141,16 +195,7 @@ def api_deduct_good():
 def api_get_good_by_name(name):
     return jsonify(get_good_by_name(name))
 
-
 create_db_table()
 
 if __name__ == '__main__':
     app.run(debug=True, port=5000, host = '0.0.0.0')
-    
-'''
-pm.environment.set("name", "chips");
-pm.environment.set("category", "food");
-pm.environment.set("price", 10);
-pm.environment.set("quantity", 10);
-pm.environment.set("description", "crispy");
-'''
